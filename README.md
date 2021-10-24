@@ -1,21 +1,44 @@
 # Backtest_RSI
 Materials for the article "Wow! Backtest RSI Crossover Strategy in Elasticsearch" in Medium
-(https://wtwong316.medium.com/wow-backtest-rsi-crossover-strategy-in-elasticsearch-1cdf837a72a1)
+(https://wtwong316.medium.com/the-more-signals-the-better-stochastic-rsi-vs-rsi-b0740a17c584)
 
 The following steps have been tested with Elasticsearch Server v7.10.1
 
-1. Create an index, fidelity28_fund and the corresponding data are populated. The data for the index, fidelity28_fund, is coming from IEX (Investors Exchange) with the 28 Fidelity commission-free ETFs selected for demo purpose. The time range picked is between 2020-12-15 and 2021-05-31.
+1. Create an index, fidelity24_fund and the corresponding data are populated. The data for the index, fidelity24_fund, is coming from IEX (Investors Exchange) with the 24 Fidelity commission-free ETFs selected for demo purpose. The time range picked is between 2021-01-01 and 2021-09-30.
 
-./fidelity28_index.sh
+$./fidelity24_index.sh
 
 2. Assume you have installed python 3.7, run the following command to go to virtual environment and prepare the python packages needed.
 
-source venv/bin/activate
+$source venv/bin/activate
 
-pip install -r requirements.txt
+$pip install -r requirements.txt
 
-3. After the indices are created and the data are populated, You can try different ticker symbol such as FDEV, FMAT, FTEC, FHLC, FENY, FSTA, FDIS, FQAL, FDLO, FDMO and FUTY to backtest the RSI trading strategy. A report will be shown for the statistical data.
+3. After the indice, fidelity24_fund, is created and the data are populated, run the following command to compute different types of RSI and indexing into the given index, for example "indicators".
 
-./backtest_rsi.sh FDEV
+$./index_srsi.sh -i fidelity24_fund -b 2021-05-01 -e 2021-09-30 -o indicators
 
+4. Perform the backtest for each RSI type of trading strategy include Stochastic RSI, Wilder's RSI and SMA RSI. Specify the parameter of the crossover values for your choice.
 
+$./backtest_srsi.sh -i indicators -s 2021-05-01 -e 2021-09-30 -t srsi -u 0.8 -l 0.2
+
+$./backtest_srsi.sh -i indicators -s 2021-05-01 -e 2021-09-30 -t msrsi -u 0.8 -l 0.2
+
+$./backtest_srsi.sh -i indicators -s 2021-05-01 -e 2021-09-30 -t rsi -u 70 -l 30
+
+$./backtest_srsi.sh -i indicators -s 2021-05-01 -e 2021-09-30 -t smarsi -u 70 -l 30
+
+5.  The report will be shown as the following for the statistics.
+
+$ ./backtest_srsi.sh -i indicators -s 2021-05-01 -e 2021-09-30 -t srsi -u 0.8 -l 0.2
+input_index: 'indicators', start_date: '2021-05-01', end_date: '2021-09-30', type: 'srsi', high mark: '0.80', low mark '0.20'
+Balance sheet : 
+--------------------------------------------------------------------
+['date:2021-05-03, symbol: FBCG, rsi: 0.000, close: 30.740 buy a share, num_of_trades: 1 ',
+ 'date:2021-05-03, symbol: FENY, srsi: 0.938, close: 13.700 no share, not sell',
+……
+'date: 2021-05-07, symbol: FCPI, buy: 28.640, close: 29.220, rsi: 1.000, share: 1, profit: 0.580, win: 1, loss: 0, total profit: 0.580',
+……
+'date: 2021-09-10, symbol: ONEQ, buy: 58.820, close: 56.180, share: 1, trade: -2.64 profit: -2.60',
+ 'symbol: ONEQ, num_of_trade: 4, win: 2, loss: 2, total profit: -2.600, benchmark_profit: 0.041']
+--------------------------------------------------------------------
