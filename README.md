@@ -29,18 +29,16 @@ $./backtest_srsi.sh -i indicators -s 2021-05-01 -e 2021-09-30 -t rsi -u 70 -l 30
 $./backtest_srsi.sh -i indicators -s 2021-05-01 -e 2021-09-30 -t smarsi -u 70 -l 30
 
 5.  The report will be shown as the following for the statistics.
-
 $ ./backtest_srsi.sh -i indicators -s 2021-05-01 -e 2021-09-30 -t srsi -u 0.8 -l 0.2
-
- input_index: 'indicators', start_date: '2021-05-01', end_date: '2021-09-30', type: 'srsi', high mark: '0.80', low mark '0.20'
- Balance sheet : 
- --------------------------------------------------------------------
- ['date:2021-05-03, symbol: FBCG, rsi: 0.000, close: 30.740 buy a share, num_of_trades: 1 ',
-  'date:2021-05-03, symbol: FENY, srsi: 0.938, close: 13.700 no share, not sell',
-  ……
- 'date: 2021-05-07, symbol: FCPI, buy: 28.640, close: 29.220, rsi: 1.000, share: 1, profit: 0.580, win: 1, loss: 0, total profit: 0.580',
-  ……
- 'date: 2021-09-10, symbol: ONEQ, buy: 58.820, close: 56.180, share: 1, trade: -2.64 profit: -2.60',
-  'symbol: ONEQ, num_of_trade: 4, win: 2, loss: 2, total profit: -2.600, benchmark_profit: 0.041']
---------------------------------------------------------------------
-
+</br>
+input_index: 'indicators', start_date: '2021-05-01', end_date: '2021-09-30', type: 'srsi', high mark: '0.80', low mark '0.20'</br>
+Balance sheet : </br>
+------------------------------------------------------------------------------------------</br>
+['date:2021-05-03, symbol: FBCG, rsi: 0.000, close: 30.740 buy a share, num_of_trades: 1 ',</br>
+ 'date:2021-05-03, symbol: FENY, srsi: 0.938, close: 13.700 no share, not sell',</br>
+ ……</br>
+'date: 2021-05-07, symbol: FCPI, buy: 28.640, close: 29.220, rsi: 1.000, share: 1, profit: 0.580, win: 1, loss: 0, total profit: 0.580',</br>
+ ……</br>
+'date: 2021-09-10, symbol: ONEQ, buy: 58.820, close: 56.180, share: 1, trade: -2.64 profit: -2.60',</br>
+ 'symbol: ONEQ, num_of_trade: 4, win: 2, loss: 2, total profit: -2.600, benchmark_profit: 0.041']</br>
+------------------------------------------------------------------------------------------</br>
