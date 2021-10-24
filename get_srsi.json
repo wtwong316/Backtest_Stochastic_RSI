@@ -1,0 +1,113 @@
+{
+    "query":{"bool": {"must": [{"range": {"date": {"gte": "%s", "lte": "%s"}}}, {"term": {"symbol": "%s"}}]}},
+    "aggs": {
+        "Backtest_SRSI": {
+			"date_histogram": {
+				"field": "date",
+				"fixed_interval": "1d",
+				"format": "yyyy-MM-dd"
+			},
+			"aggs": {
+				"SDaily": {
+					"bucket_selector": {
+						"buckets_path": {
+							"count": "_count"
+						},
+						"script": "params.count > 0"
+					}
+				},
+				"DateStr": {"min": {"field": "date"}},
+				"Close": {
+					"avg": {
+						"field": "close"
+					}
+				},
+				"DClose": {
+					"derivative": {
+						"buckets_path": "Close"
+					}
+				},
+				"SDClose":{"bucket_selector": {"buckets_path": {"DClose": "DClose"}, "script": "params.DClose != null"}},
+				"Gain": {
+					"bucket_script": {
+						"buckets_path": {
+							"DClose": "DClose"
+						},
+						"script": "(params.DClose > 0) ? params.DClose : 0"
+					}
+				},
+				"Loss": {
+					"bucket_script": {
+						"buckets_path": {
+							"DClose": "DClose"
+						},
+						"script": "(params.DClose < 0) ? -params.DClose: 0"
+					}
+				},
+				"GainSMA": {
+					"moving_fn": {
+						"script": "MovingFunctions.unweightedAvg(values)", "window": 14,
+						"buckets_path": "Gain", "shift":1
+					}
+				},
+           		"LossSMA": {
+					"moving_fn": {
+						"script": "MovingFunctions.unweightedAvg(values)", "window": 14,
+						"buckets_path": "Loss", "shift":1
+					}
+				},
+				"GainEWMA": {
+					"moving_fn": {
+						"script": "MovingFunctions.ewma(values, 0.071428571)", "window": 100,
+						"buckets_path": "Gain", "shift":1
+					}
+				},
+           		"LossEWMA": {
+					"moving_fn": {
+						"script": "MovingFunctions.ewma(values, 0.071428571)", "window": 100,
+						"buckets_path": "Loss", "shift":1
+					}
+				},
+				"RSI": {
+					"bucket_script": {
+						"buckets_path": {"GainEWMA": "GainEWMA", "LossEWMA": "LossEWMA"},
+						"script": "100 - 100.0/(1+params.GainEWMA/params.LossEWMA)"
+					}
+				},
+				"SMARSI": {
+					"bucket_script": {
+						"buckets_path": {"GainSMA": "GainSMA", "LossSMA": "LossSMA"},
+						"script": "100 - 100.0/(1+params.GainSMA/params.LossSMA)"
+					}
+				},
+				"HRSI": {
+					"moving_fn": {
+						"script": "MovingFunctions.max(values)", "window": 14,
+						"buckets_path": "RSI", "shift":1
+					}
+				},
+				"LRSI": {
+					"moving_fn": {
+						"script": "MovingFunctions.min(values)", "window": 14,
+						"buckets_path": "RSI", "shift":1
+					}
+				},
+				"SRSI": {
+					"bucket_script": {
+						"buckets_path": {"RSI": "RSI", "LRSI": "LRSI", "HRSI":"HRSI"},
+						"script": "(params.RSI - params.LRSI)/(params.HRSI - params.LRSI)"
+					}
+				},
+                "MSRSI": {
+					"moving_fn": {
+						"script": "MovingFunctions.unweightedAvg(values)", "window": 7,
+						"buckets_path": "SRSI", "shift":1
+					}
+				},
+				"SStartDate": {"bucket_selector": {"buckets_path": {"DateStr": "DateStr"}, "script": "params.DateStr >= %sL"}}
+			}
+		}
+    }, 
+    "from": 0, 
+    "size": 0
+}

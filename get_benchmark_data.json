@@ -1,0 +1,47 @@
+{
+    "query":{
+        "bool": {
+            "must": [
+                {"range": {"date": {"gte": "%s", "lte": "%s"}}},
+                {"term": {"symbol": "%s"}}
+            ]
+        }
+    },
+    "aggs":{
+        "benchmark" : {
+            "date_histogram": {
+				"field": "date",
+				"fixed_interval": "1d",
+				"format": "yyyy-MM-dd"
+			},
+			"aggs": {
+				"SDaily": {
+					"bucket_selector": {
+						"buckets_path": {
+							"count": "_count"
+						},
+						"script": "params.count > 0"
+					}
+				},
+                "DateStr": {"min": {"field": "date"}},
+                "Close": {
+                    "avg": {
+                        "field": "close"
+                    }
+                },
+                "DClose": {
+                    "derivative": {
+                        "buckets_path": "Close"
+                    }
+                },
+                "CSum_DClose": {
+                    "cumulative_sum": {
+                        "buckets_path": "DClose"
+                    }
+                },
+                "S_Date": {"bucket_selector": {"buckets_path": {"DateStr": "DateStr"}, "script": "params.DateStr >= %sL"}}
+            }
+        }
+    },
+    "size":0
+}

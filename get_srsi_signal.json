@@ -1,0 +1,11 @@
+{
+    "query":{
+        "bool": {
+            "must": [{"range": {"date": {"gte": "%s", "lte": "%s"}}}],
+            "should":[{"range": {"%s": {"gte": "%s"}}},{"range": {"%s": {"lte": "%s"}}}],
+            "minimum_should_match":1
+        }
+    },
+    "sort": {"date":"asc", "symbol":"asc"},
+    "size": 10000
+}
